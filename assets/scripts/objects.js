@@ -18,10 +18,11 @@ const renderMovie = function (filter = '') {
         );
 
     filteredMovies.forEach((movie) => {
-      let html = `${movie.info.title} - `;
-      for (const key in movie.info) {
+      const { info } = movie;
+      let html = `${info.title} - `;
+      for (const key in info) {
         if (key != 'title') {
-          html += `${key}: ${movie.info[key]}`;
+          html += `${key}: ${info[key]}`;
         }
       }
 
@@ -64,11 +65,6 @@ addMovieBtn.addEventListener('click', addMovieHandler);
 
 const searchMovieHandler = function () {
   const filterTitle = document.querySelector('#filter-title').value;
-  // const filteredMovies = movies.filter((movie) =>
-  //   movie.info.title.toLowerCase().includes(filterTitle.toLowerCase())
-  // );
-
-  // console.log(filteredMovies);
 
   renderMovie(filterTitle);
 };
