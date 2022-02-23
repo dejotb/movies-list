@@ -20,11 +20,10 @@ const renderMovie = function (filter = '') {
     filteredMovies.forEach((movie) => {
       const { info, ...otherProps } = movie;
       console.log(otherProps);
-      let { getFormatedTitle } = movie;
-      getFormatedTitle = getFormatedTitle.bind(movie);
-      let html = `${getFormatedTitle()} - `;
+      const { getFormatedTitle } = movie;
+      let html = `${getFormatedTitle.call(movie)} - `;
       for (const key in info) {
-        if (key != 'title') {
+        if (key != 'title' && key != '_title') {
           html += `${key}: ${info[key]}`;
         }
       }
@@ -41,22 +40,31 @@ const addMovieHandler = function () {
   const extraName = document.querySelector('#extra-name').value;
   const extraValue = document.querySelector('#extra-value').value;
 
-  if (
-    title.trim() === '' ||
-    extraName.trim() === '' ||
-    extraValue.trim() === ''
-  ) {
+  if (extraName.trim() === '' || extraValue.trim() === '') {
   } else {
     const newMovie = {
       info: {
-        title,
+        set title(val) {
+          if (val.trim() === '') {
+            this._title = 'default';
+            return;
+          }
+          this._title = val;
+        },
+        get title() {
+          return this._title.toUpperCase();
+        },
         [extraName]: extraValue,
       },
+
       id: Math.floor(Math.random() * 1000),
       getFormatedTitle() {
-        return this.info.title.toUpperCase();
+        return this.info.title;
       },
     };
+
+    newMovie.info.title = title;
+
     movies.push(newMovie);
     renderMovie();
   }
@@ -69,9 +77,22 @@ const addMovieHandler = function () {
 addMovieBtn.addEventListener('click', addMovieHandler);
 
 const searchMovieHandler = function () {
+  console.log(this);
   const filterTitle = document.querySelector('#filter-title').value;
 
   renderMovie(filterTitle);
 };
 
 searchMovieBtn.addEventListener('click', searchMovieHandler);
+
+const members = {
+  teamName: 'blue rockets',
+  people: ['Max', 'Manuel'],
+  getTeamMembers() {
+    this.people.forEach((person) => {
+      console.log(`${person} ${this.teamName}`);
+    });
+  },
+};
+
+members.getTeamMembers();
